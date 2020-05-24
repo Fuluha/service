@@ -71,7 +71,7 @@ class Crawler:
                 if soup != None:
                     tags = soup.select(".r > a")
                     urls = [tag.get("href") for tag in tags]
-                    subheading = [soup.find_all(re.compile("[hH][1-5].*?"))]
+                    subheadings = [soup.find_all(re.compile("[hH][1-5].*?"))]
                     return urls
                 else:
                     raise Exception("No Data")
@@ -90,18 +90,20 @@ if __name__ == '__main__':
             for i,url in enumerate(urls, start=1):
                 if Scraper.get_robots_txt(url):
                     soup = Scraper.get_html(url)
+                    subheadings = soup.find_all(re.compile("[hH][1-5].*?"))        
                     print(soup.title.get_text())
                     print(url)
+                    workbook.update('B'+str(i+2), url)
+                    workbook.update('B'+str(i+3), soup.title.get_text())
                     # workbook.update('B'+str(i+2), url)
                     # workbook.update('C'+str(i+2), soup.title.get_text())
-                    for subheading in soup.find_all(re.compile("[hH][1-5].*?")):
+                    for i,subheading in enumerate(subheadings, start=1):
+                    # for i,subheading in enumerate(subheadings, start=1):
+                    # for subheading in soup.find_all(re.compile("[hH][1-5].*?")):
                         print(subheading.get_text())
-                        workbook.update('D'+str(i+2), subheading.get_text())
-                        # headline = soup.find_all(re.compile("^h"))
-                        # headline = soup.find_all(h2)
-                        # print(soup.h2.get_text())
-                        # print("BREAK")
-                        # break
+                        workbook.update('B'+str(i+4), subheading.get_text())
+                    print("BREAK")
+                    break
                 else:
                     print("クロールが拒否されました [{}]".format(url))
         else:
